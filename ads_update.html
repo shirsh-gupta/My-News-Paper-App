@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>The News Breach</title>
+    <link rel="icon" type="image/x-icon" href="newsfavicon.png">
+    <style>
+        button {
+          width: 90px;
+          margin-bottom: 5px;
+        }
+        .button{
+          
+    display: inline-block; /* This makes the buttons appear in a row */
+    margin-right: 0px;    /* Add some space between the buttons */
+  
+        }
+  
+        
+    .article {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      font-family:'Courier New', Courier, monospace;
+      background-color: rgba(12, 12, 12, 0.7) ;
+      color: #fff;
+      text-align:start;
+      border-radius: 20px;
+    }
+  
+    form {
+      display: grid;
+      gap: 15px;
+    }
+  
+    label {
+      font-weight: bold;
+    }
+    input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        font-family:'Courier New', Courier, monospace;
+        font-size:small;
+        border-radius: 4px;
+      }
+      #category{
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        font-family:'Courier New', Courier, monospace;
+        font-size: small;
+        border-radius: 4px;
+      }
+    
+  
+      h2 {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .topdiv:hover{
+    color: rgb(1, 241, 1);
+    }
+  
+    input[type="date"]{
+      width: 120px;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      font-family:'Courier New', Courier, monospace;
+      font-size:small;
+      border-radius: 4px;
+    }
+    select{
+      width: 100px;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      font-family:'Courier New', Courier, monospace;
+      font-size:small;
+      border-radius: 4px;
+      
+    }
+  </style>
+</head>
+<body>
+    <div class="topdiv">
+        <p class="newspapername"><a href="index.html">The News<span> Breach</span></a></p>     
+      </div>
+     
+      <ul id="articleList"></ul>
+      <div class="container">
+        <div class="column" id="column-1"></div>
+        <div class="column" id="column-2"></div>
+      </div>
+
+      <script>
+        async function fetchauthArticles() {
+          try {
+            const response = await fetch('http://localhost:3000/author-ads');
+            const data = await response.json();
+  
+            const column1 = document.getElementById('column-1');
+            const column2 = document.getElementById('column-2');
+            // Clear existing content in columns before appending new articles
+            column1.innerHTML = '';
+            column2.innerHTML = '';
+            data.forEach((article, index) => {
+              const articleElement = document.createElement('div');
+              articleElement.innerHTML = `
+                <div id="article">
+                <h2>${article.title}</h2>
+                <p class="p1" style="white-space: pre-wrap; ">${article.content}</p>
+                <p>Category: ${article.category}</p>
+                <p>Priority: ${article.priority}</p>
+                <p>End Date: ${article.end_date}</p>
+                <p>Author: ${article.author}</p>
+                <p>ID: ${article.ad_id}</p>            
+                <button onclick='modifyAds(${article.ad_id})'>Modify</button>
+                <button onclick='deleteAds(${article.ad_id})'>Delete</button>           
+              </div>
+              `;
+  
+              // Alternate between columns to create a balanced layout
+              if (index % 2 === 0) {
+                column1.appendChild(articleElement);
+              } else {
+                column2.appendChild(articleElement);
+              }
+            });
+          } catch (error) {
+            console.error('Failed to fetch articles:', error);
+          }
+        }
+  
+        async function modifyAds(ad_id) {
+        try {
+          console.log("AD_ID : ",ad_id);
+          const response = await fetch(`http://localhost:3000/modify_ad?ad_id=${ad_id}`);
+          const data = await response.json();
+          displayNews(data);
+        } catch (error) {
+          console.error('Failed to fetch article for modification:', error);
+        }
+      }
+
+      function displayNews(data) {
+        console.log("Data:",data[0]);
+        const column1 = document.getElementById('column-1');
+        const column2 = document.getElementById('column-2');
+        column1.innerHTML = '';
+        column2.remove();
+
+        const articleCard = document.createElement('div');
+        articleCard.className = 'article-card';
+      articleCard.innerHTML = `
+      
+  <div class="article">
+    <h2>Welcome ${data[0].author}</h2>
+    <form id="modify-form">
+
+      <p id="ID">Article ID: ${data[0].id}</p>
+      
+      <label for="category">Category:</label>
+            <select id="category" name="category" default="${data[0].category}" required>
+                <option value="">Select Category</option>
+                <option value="Automotive">Automotive</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion and Style">Fashion and Style</option>
+                <option value="Travel and Tourism">Travel and Tourism</option>
+                <option value="Health and Wellness">Health and Wellness</option>
+                <option value="Food and Dining">Food and Dining</option>
+                <option value="Business and Services">Business and Services</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Miscellaneous">Miscellaneous</option>
+              </select>
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" required value="${data[0].title}">
+      <label for="content">Content:</label>
+      <textarea id="content" name="content" rows="5" cols="10" required>${data[0].content}</textarea>
+      <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" required>
+            <label for="priority" id="priority">Priority:</label>
+            <select id="priority" name="priority" required>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+      <button  onclick=updateArticle(${data[0].id}) type="submit" class="button">Save</button>
+    </form>
+  </div>
+`;
+        column1.appendChild(articleCard);
+      }
+    async function updateArticle(adid){
+      const articleForm = document.getElementById("modify-form");
+      articleForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const ad_id=adid;
+      const category=articleForm.elements.category.value;
+      console.log(category);
+      const title = articleForm.elements.title.value;
+      const content = articleForm.elements.content.value;
+      const end_date = articleForm.elements.end_date.value;
+	  const priority = articleForm.elements.priority.value;
+      try {
+        const response = await fetch('http://localhost:3000/update-ad', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ category, title, content, end_date, priority, ad_id})
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Article submission successful
+          alert(data.user+" "+data.message);
+          window.location.href = 'ads_update.html';
+          
+        } else {
+          // Show the error message returned from the server
+          errorMessage.innerText = `Ad submission failed: ${data.error}`;
+        }
+      } catch (error) {
+        // Handle network or server errors
+        errorMessage.innerText = 'An error occurred. Please try again later.';
+      }
+    });
+      }
+
+
+
+      async function deleteAds(ad_id) {
+        console.log("Ad ID: ",ad_id);
+  try {
+    const response = await fetch(`http://localhost:3000/delete-ad/${ad_id}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      alert('Ad deleted successfully!');
+      // Refresh the page or update the ad list
+      window.location.href = 'ads_update.html'; // Update this function according to your structure
+    } else {
+      alert('Failed to delete ad.');
+    }
+  } catch (error) {
+    console.error('An error occurred while deleting ad:', error);
+  }
+}
+
+
+
+
+      fetchauthArticles();
+      </script>
+</body>
+</html>

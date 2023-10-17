@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The News Breach: Journalist Registration</title>
+  <link rel="icon" type="image/x-icon" href="newsfavicon.png">
+  <style>
+    body {
+      font-family:'Courier New', Courier, monospace;
+
+  margin: 0;
+  padding: 0;
+  background-image: url("newswall1.jpg");
+      /*background-image: linear-gradient(200deg,rgb(0, 60, 128),rgb(90, 195, 255),rgb(0, 60, 128) );*/
+    background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  height: 697px;
+  background-size: cover; /* Cover the entire screen */
+  background-attachment: fixed;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 20px;
+  font-family:'Courier New', Courier, monospace;
+}
+
+form {
+  max-width: 370px;
+  margin: 10px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+       border-radius: 15px;
+      color: #fff;
+      background-color:rgba(0, 0, 0, 0.7);
+     
+      font-family:'Courier New', Courier, monospace;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"],input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+button {
+  width: 100%;
+  
+      padding: 14px 20px;
+      margin: 10px 0;
+      background-color:rgb(62, 146, 255);
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family:'Courier New', Courier, monospace;
+}
+#name{
+  display: flexbox;
+  margin-bottom: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Error message style */
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+#f_name,#l_name{
+  width: 100%;
+  padding: 10px;
+  display: inline;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+select{
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 15px;
+    }
+    option{
+      font-size: 15px;
+    }
+
+  </style>
+</head>
+<body>
+  
+  <form id="registrationForm" method="POST" action="/register">
+    <h2>User Registration</h2>
+
+    <label for="Login_type">Register as:</label>
+      <select name="Login_type" id="Login_type">
+      <option value="Author">Author</option>
+      <option value="Ad Agent">Ad Agent</option>
+      </select>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label id="name" for="name">First Name:</label>
+    <input type="text" id="f_name" name="f_name" required>
+    
+    <label id="name" for="name">Last Name:</label>
+    <input type="text" id="l_name" name="l_name" required>
+
+    <label for="mobile_no">Mobile No.:</label>
+    <input type="text" id="mobile_no" name="mobile_no" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+
+    <label for="confirmPassword">Confirm Password:</label>
+    <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+    <button type="submit">Register</button>
+    <div class="error-message" id="errorMessage"></div>
+  </form>
+
+  <script>
+    const registrationForm = document.getElementById("registrationForm");
+    const errorMessage = document.getElementById("errorMessage");
+
+    registrationForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const username = registrationForm.elements.username.value;
+      const f_name=registrationForm.elements.f_name.value;
+      const l_name=registrationForm.elements.l_name.value;
+      const mobile_no=registrationForm.elements.mobile_no.value;
+      const email = registrationForm.elements.email.value;
+      const password = registrationForm.elements.password.value;
+      const confirmPassword = registrationForm.elements.confirmPassword.value;
+      const login_type=registrationForm.elements.Login_type.value;
+      if (password !== confirmPassword) {
+        errorMessage.innerText = "Passwords do not match.";
+        return;
+      }
+
+      // Send the registration data to the server
+      try {
+        const response = await fetch('http://localhost:3000/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username,f_name,l_name,email,mobile_no, password,login_type })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Registration successful
+          alert('Registration successful! You can now log in.');
+          // Replace 'login.html' with the URL of your login page
+          window.location = 'login.html';
+        } else {
+          // Show the error message returned from the server
+          errorMessage.innerText = `Registration failed: ${data.error}`;
+        }
+      } catch (error) {
+        // Handle network or server errors
+        errorMessage.innerText = 'An error occurred. Please try again later.';
+      }
+    });
+  </script>
+</body>
+</html>

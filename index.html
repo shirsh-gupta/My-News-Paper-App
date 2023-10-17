@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>The News Breach</title>
+    <link rel="icon" type="image/x-icon" href="newsfavicon.png">
+</head>
+<body>
+    <div class="topdiv">
+        
+        <p class="newspapername">The News<span> Breach</span> </p>
+    </div>
+    <hr>
+    <nav class="navigationbar">
+        
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#" onclick="fetchLatestNews()">Latest News</a></li>
+          <li><a href="#" onclick="fetchNewsByCategory('Politics')">Politics</a></li>
+          <li><a href="#" onclick="fetchNewsByCategory('Sports')">Sports</a></li>
+          <li><a href="#" onclick="fetchNewsByCategory('Business')">Business</a></li>
+          <li><a href="#" onclick="fetchNewsByCategory('Technology')">Technology</a></li>
+          <li><a href="#" onclick="fetchNewsByCategory('Entertainment')">Entertainment</a></li>
+          <li><a target="_blank" href="login.html">Login</a></li>
+          <li><a href="Advertisement.html">Ads</a></li>
+        </ul>
+
+      </nav>
+      <hr>
+      <input type="search" id="search" placeholder="Type relevant search keywords...">
+      <button type="button" id="button" onclick="searchArticles()">Search</button>
+      <div class="container">
+        <div class="column" id="column-1"></div>
+        <div class="column" id="column-2"></div>
+      </div>
+  <script>
+    async function fetchArticles() {
+    try {
+      const response = await fetch('http://localhost:3000/articles');
+      const data = await response.json();
+
+      const column1 = document.getElementById('column-1');
+      const column2 = document.getElementById('column-2');
+
+      // Clear existing content in columns before appending new articles
+      column1.innerHTML = '';
+      column2.innerHTML = '';
+
+      // Distribute articles evenly between the two columns
+      data.forEach((article, index) => {
+        const articleElement = document.createElement('div');
+        articleElement.innerHTML = `
+          <div id="article">
+          <h2>${article.title}</h2>
+          <p class="p1" style="white-space: pre-wrap; ">${article.content}</p>
+          <p>Author: ${article.author}</p>
+          <p>Category: ${article.category}</p>
+          </div>
+        `;
+
+        // Alternate between columns to create a balanced layout
+        if (index % 2 === 0) {
+          column1.appendChild(articleElement);
+        } else {
+          column2.appendChild(articleElement);
+        }
+      });
+    } catch (error) {
+      console.error('Failed to fetch articles:', error);
+    }
+  }
+
+  fetchArticles();
+  
+  function fetchNewsByCategory(category) {
+      fetch(`http://localhost:3000/catarticles?category=${category}`)
+        .then(response => response.json())
+        .then(data => displayNews(data))
+        .catch(error => console.error('Error fetching news:', error));
+    }
+
+    function fetchLatestNews() {
+      fetch('http://localhost:3000/latest-articles')
+        .then(response => response.json())
+        .then(data => displayNews(data))
+        .catch(error => console.error('Error fetching latest news:', error));
+    }
+
+    function displayNews(articles) {
+      //const container = document.getElementsByClassName('container');
+      //container.innerHTML = '';
+      const column1 = document.getElementById('column-1');
+      const column2 = document.getElementById('column-2');
+      column1.innerHTML = '';
+      column2.innerHTML='';
+      
+      articles.forEach((article, index) => {
+        const articleCard = document.createElement('div');
+        articleCard.className = 'article-card';
+        articleCard.innerHTML = `
+          <div id="article">
+          <h2>${article.title}</h2>
+          <p class="p1" style="white-space: pre-wrap;">${article.content}</p>
+          <p>Author: ${article.author}</p>
+          <p>Category: ${article.category}</p>
+          </div>
+        `;
+        if (index % 2 === 0) {
+          column1.appendChild(articleCard);
+        } else {
+          column2.appendChild(articleCard);
+        }
+        //column1.appendChild(articleCard);
+      });
+    }
+
+    async function searchArticles() {
+      try {
+        const searchKeyword = document.getElementById('search').value;
+        const response = await fetch(`http://localhost:3000/searcharticles?q=${encodeURIComponent(searchKeyword)}`);
+        const data = await response.json();
+
+        // Ensure that the data is an array before iterating over it
+        console.log(data);
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid response data format.');
+        }
+
+        // Clear existing content in columns before appending new articles
+        document.getElementById('column-1').innerHTML = '';
+        document.getElementById('column-2').innerHTML = '';
+
+        data.forEach((article) => {
+          const articleElement = createArticleElement(article);
+          // Append the article to the columns
+          if (data.indexOf(article) % 2 === 0) {
+            document.getElementById('column-1').appendChild(articleElement);
+          } else {
+            document.getElementById('column-2').appendChild(articleElement);
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      }
+    }
+
+    function createArticleElement(article) {
+      const articleCard = document.createElement('div');
+        articleCard.id = 'article';
+      articleCard.innerHTML = `
+        <h2>${article.title}</h2>
+        <p style="white-space: pre-wrap;">${article.content}</p>
+        <p>Author: ${article.author}</p>
+        <p>Category: ${article.category}</p>
+      `;
+      return articleCard;
+    }
+  </script>    
+</body>
+</html>

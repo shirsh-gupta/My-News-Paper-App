@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="newsfavicon.png">
+    <title>The News Breach: Ads Page</title>
+    <style>
+        .topdiv{      
+    font-size: 50px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    display: inline-flex;
+    margin-bottom: 0px;
+    padding: 0px;
+    }
+    .topdiv,a:hover{
+  color: rgb(1, 241, 1);
+  }
+  span{
+    color: red;
+    }
+.newspapername{      
+    background-color: rgba(0,0,0,0.7);
+    border-radius: 20px;
+    margin:15px;
+    padding: 20px;
+    font-family:'Courier New', Courier, monospace;      
+    }
+
+body{
+  text-align: center;
+  background-image: url("newswall1.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-size: cover; /* Cover the entire screen */
+  background-attachment: fixed;
+}
+.container {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px auto;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.column {
+  width: 45%;
+  padding: 0px;
+}
+#ads{
+  background-color: rgba(12, 12, 12, 0.7) ;
+  display: inline-block;
+  border-radius: 20px;
+  font-family:'Courier New', Courier, monospace;
+  width: 450px;
+  height: 200px;
+  color: #fff;
+  text-align:start;
+  overflow: auto;
+  padding: 15px;
+  margin-top: 10px;
+  font-size: 13px;
+  transition: transform 0.3s;
+  animation: fadeIn 0.3s ease-in-out;
+}
+#ads:hover{
+  color: rgb(6, 251, 255);
+  transform: scale(1.04);
+  
+}
+a {
+  color:rgb(255, 255, 255);
+  text-decoration: none;
+  
+  padding: 5px;
+
+}
+
+#ads::-webkit-scrollbar{
+  background-color: rgba(12, 12, 12, 0) ;
+}
+
+    </style>
+</head>
+<body>
+    <div class="topdiv">
+        
+        <p class="newspapername"><a  href="index.html">The News<span> Breach</span></a> </p>
+    </div>
+    <div class="container">
+        <div class="column" id="column-1"></div>
+        <div class="column" id="column-2"></div>
+        <div class="column" id="column-3"></div>
+    </div>
+    <!-- JavaScript 6code can be added here if needed -->
+<script>
+    async function fetchAds() {
+    try {
+      const response = await fetch('http://localhost:3000/get_ads');
+      const data = await response.json();
+
+      const column1 = document.getElementById('column-1');
+      const column2 = document.getElementById('column-2');
+      const column3 = document.getElementById('column-3');
+
+
+      // Clear existing content in columns before appending new articles
+      column1.innerHTML = '';
+      column2.innerHTML = '';
+      column3.innerHTML = '';
+
+      // Distribute articles evenly between the two columns
+      data.forEach((ads, index) => {
+        const adsElement = document.createElement('div');
+        adsElement.innerHTML = `
+          <div id="ads">
+          <h2>${ads.title}</h2>
+          <p>${ads.content}</p>
+          <p>Category: ${ads.category}</p>
+          </div>
+        `;
+
+        // Alternate between columns to create a balanced layout
+        if (index % 3 === 0) {
+          column1.appendChild(adsElement);
+        } else if (index % 3 === 2) {
+          column2.appendChild(adsElement);
+        }
+        else {
+            column3.appendChild(adsElement);
+        }
+      });
+    } catch (error) {
+      console.error('Failed to fetch articles:', error);
+    }
+  }
+
+  fetchAds();
+
+</script>
+</body>
+</html>

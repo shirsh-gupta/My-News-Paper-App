@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The News Breach: Login Page</title>
+  <link rel="icon" type="image/x-icon" href="newsfavicon.png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("newswall1.jpg");
+      /*background-image: linear-gradient(200deg,rgb(0, 60, 128),rgb(90, 195, 255),rgb(0, 60, 128) );*/
+    background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  height: 599px;
+  background-size: cover; /* Cover the entire screen */
+  background-attachment: fixed;
+      
+ 
+    }
+    
+
+    .container {
+      width: 300px;
+      margin: 100px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 15px;
+      color: #fff;
+      background-color:rgba(0, 0, 0, 0.7);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      font-family:'Courier New', Courier, monospace;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 15px;
+    }
+
+    button {
+      font-family:'Courier New', Courier, monospace;
+      width: 100%;
+      padding: 14px 20px;
+      margin: 10px 0;
+      background-color:rgb(62, 146, 255);
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .error-message {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .register{
+        
+      color: rgb(255, 255, 255);
+      margin: 0px;
+    }
+    a{
+        color: #fff;
+        text-decoration: none;
+        list-style: none;
+    }
+    a:hover{
+      color: rgb(8, 234, 255);
+        text-decoration: none;
+        list-style: none;
+        font-weight: bold;
+    }
+    select{
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 15px;
+    }
+    option{
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm" method="POST" action="/login">
+
+      <label for="Login_type">Login As:</label>
+      <select name="Login_type" id="Login_type">
+      <option value="Author">Author</option>
+      <option value="Ad Agent">Ad Agent</option>
+      </select>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Login</button>
+      <div class="error-message" id="errorMessage"></div>
+      
+      <div><a class="register" href="registration.html" target="_blank">Not a user? Register here</a></div>
+    </form>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const errorMessage = document.getElementById("errorMessage");
+    
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+  
+      const username = loginForm.elements.username.value;
+      const password = loginForm.elements.password.value;
+      const login_type=loginForm.elements.Login_type.value;
+      console.log(login_type);
+      // Send the login credentials to the server
+      try {
+        
+        const response = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password,login_type })
+        });
+        var loggedInUserName=username;
+        const data = await response.json();
+        
+        if (response.ok) {
+
+          // If the login was successful, redirect to a new page or display a success message
+          
+          alert("Welcome "+ data.user +" "+ data.message);
+          // Replace 'your-dashboard.html' with the URL of the dashboard or the next page after successful login
+          
+        if(login_type=='Author')
+         window.location = 'new_story.html';
+        else
+         window.location = 'new_Ads.html';
+        } else {
+          // If the login failed, show the error message returned from the server
+          errorMessage.innerText = data.error;
+        }
+      } catch (error) {
+        // Handle network or server errors
+        errorMessage.innerText = 'An error occurred. Please try again later.';
+      }
+    });
+  </script>
+  
+</body>
+</html>
